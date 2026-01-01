@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고암중 국어왕: 맞춤법 45제 (완성본)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Jua&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fab1a0;
+            --correct-color: #00b894;
+            --wrong-color: #d63031;
+            --bg-color: #f1f2f6;
+        }
+
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #2d3436;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-family: 'Jua', sans-serif;
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #dfe6e9;
+        }
+
+        .intro {
+            text-align: center;
+            color: #636e72;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* 프로그레스 바 */
+        .progress-container {
+            width: 100%;
+            background-color: #dfe6e9;
+            border-radius: 15px;
+            height: 15px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #0984e3;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 0;
+            line-height: 15px;
+            font-size: 0.8rem;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 2px #000;
+        }
+
+        /* 문제 카드 */
+        .quiz-item {
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .quiz-item:hover {
+            border-color: var(--secondary-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .question-header {
+            margin-bottom: 15px;
+        }
+        .q-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            font-family: 'Jua', sans-serif;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+        .question-text span {
+            color: var(--primary-color);
+            text-decoration: underline;
+            text-decoration-thickness: 3px;
+            text-underline-offset: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+        .ox-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.3rem;
+            font-family: 'Jua', sans-serif;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            background: white;
+            color: #636e72;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .ox-btn:hover { background-color: #f1f2f6; }
+        
+        .ox-btn.selected-o {
+            background-color: #e3fafc;
+            border-color: var(--correct-color);
+            color: #009473;
+        }
+        .ox-btn.selected-x {
+            background-color: #ffeaea;
+            border-color: var(--wrong-color);
+            color: #c0392b;
+        }
+
+        /* 해설 박스 (문제 바로 아래) */
+        .explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #2d3436;
+        }
+
+        /* 하단 버튼 */
+        .submit-area {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Jua', sans-serif;
+            box-shadow: 0 8px 15px rgba(108, 92, 231, 0.3);
+            transition: transform 0.2s;
+        }
+        .submit-btn:hover {
+            transform: scale(1.05);
+            background-color: #5849be;
+        }
+
+        /* 결과 화면 & 복습 노트 */
+        #result-screen {
+            display: none;
+            margin-top: 50px;
+            border-top: 2px dashed #dfe6e9;
+            padding-top: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-box {
+            text-align: center;
+            background-color: #2d3436;
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        .score-num {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ffeaa7;
+            margin: 10px 0;
+        }
+
+        .review-container {
+            background-color: #fff;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        .review-title {
+            color: #2d3436;
+            font-family: 'Jua';
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        /* 복습 아이템 스타일 */
+        .review-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .review-item:hover { transform: translateX(5px); }
+        
+        .review-item.correct {
+            background-color: #e3fafc;
+            border-left: 5px solid var(--correct-color);
+        }
+        .review-item.wrong {
+            background-color: #fff5f5;
+            border-left: 5px solid var(--wrong-color);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .correct-badge { color: var(--correct-color); }
+        .wrong-badge { color: var(--wrong-color); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 고암중 국어왕: 맞춤법 OX 45제</h1>
+    <p class="intro">
+        웃긴 실수와 헷갈리는 표준어가 섞여 있습니다.<br>
+        45문제를 풀고 <strong>전체 결과를 확인</strong>해보세요!
+    </p>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="progress-text" id="progress-text">0 / 45</div>
+    </div>
+
+    <div id="quiz-list">
+        </div>
+
+    <div class="submit-area">
+        <button class="submit-btn" onclick="checkAll()">💯 채점하기</button>
+    </div>
+
+    <div id="result-screen"></div>
+</div>
+
+<script>
+    // 문제 데이터 (14개 레전드 + 31개 필수 규정 = 총 45개)
+    const rawData = [
+        // [Part 1] 웃음 주의 레전드
+        { q: "판사님, 피고인은 <span>싱싱미역</span> 상태입니다.", a: "X", desc: "미역이 아닙니다. 심신(마음과 몸)이 미약하다는 <strong>'심신미약'</strong>이 맞습니다." },
+        { q: "여름 휴가 <span>성숙이</span>에는 비싸다.", a: "X", desc: "사람 이름이 아닙니다. 수요가 한창인 시기인 <strong>'성수기'</strong>가 맞습니다." },
+        { q: "와, 정말 <span>어의가 없네</span>.", a: "X", desc: "임금님 의사(어의)가 아닙니다. <strong>'어이없다'</strong>가 맞습니다." },
+        { q: "제 <span>장례희망</span>은 의사입니다.", a: "X", desc: "미래를 뜻하는 <strong>'장래희망'</strong>이 맞습니다. 장례는 슬픈 예식입니다." },
+        { q: "성격이 참 <span>골이 따분하다</span>.", a: "X", desc: "머리뼈(골)가 지루한 게 아닙니다. <strong>'고리타분하다'</strong>가 표준어입니다." },
+        { q: "유명한 <span>연애인</span>을 봤어.", a: "X", desc: "연애하는 사람이 아닙니다. 예술을 하는 대중스타는 <strong>'연예인'</strong>입니다." },
+        { q: "나한테 <span>일해라절해라</span> 하지 마.", a: "X", desc: "'이리하여라 저리하여라'의 준말인 <strong>'이래라저래라'</strong>가 맞습니다." },
+        { q: "당신의 <span>권투를 빕니다</span>.", a: "X", desc: "싸우라는 뜻이 아닙니다. 행운을 빈다는 <strong>'건투를 빈다'</strong>입니다." },
+        { q: "공부 좀 <span>시험시험해</span>.", a: "X", desc: "시험을 또 보라는 게 아닙니다. 쉬어가며 하라는 <strong>'쉬엄쉬엄'</strong>입니다." },
+        { q: "에어컨 <span>시래기</span>가 고장 났어.", a: "X", desc: "말린 무청(시래기)이 아닙니다. 실외에 두는 기계는 <strong>'실외기'</strong>입니다." },
+        { q: "매운 <span>곱셈추위</span>가 왔다.", a: "X", desc: "추위가 곱하기로 오면 안 되죠. 꽃을 시샘하는 <strong>'꽃샘추위'</strong>입니다." },
+        { q: "밥값은 깔끔하게 <span>덮집회의</span> 하자.", a: "X", desc: "지붕을 덮고 회의를 왜 하나요? 비용을 각자 부담하자는 뜻의 <strong>'더치페이(Dutch pay)'</strong>가 맞습니다." },
+        { q: "맛이 <span>나물할 데 없다</span>.", a: "X", desc: "나물 반찬이 아닙니다. 나무랄(지적할) 곳이 없다는 <strong>'나무랄 데 없다'</strong>가 맞습니다." },
+        { q: "담배는 <span>바람물질</span>이다.", a: "X", desc: "바람을 일으키지 않습니다. 암을 발생시키는 <strong>'발암물질'</strong>입니다." },
+
+        // [Part 2] 실력 검증 및 필수 규정
+        { q: "내일 학교에서 <span>봬요</span>.", a: "O", desc: "'뵈어요'의 준말이므로 <strong>'봬요'</strong>가 올바른 표기입니다." },
+        { q: "감기가 싹 <span>낳았다</span>.", a: "X", desc: "병이 고쳐지다는 <strong>'나았다'</strong>입니다. '낳다'는 아기를 낳는 것입니다." },
+        { q: "<span>며칠</span> 뒤에 개학이다.", a: "O", desc: "'몇 일'은 틀린 표기입니다. 어원이 불분명하여 소리 나는 대로 <strong>'며칠'</strong>로 적습니다." },
+        { q: "숙제를 <span>금세</span> 끝냈다.", a: "O", desc: "'금시에'의 준말이므로 <strong>'금세'</strong>가 맞습니다." },
+        { q: "너 그러면 <span>않</span> 돼.", a: "X", desc: "'돼' 앞에는 부사 <strong>'안(아니)'</strong>을 씁니다. ('않'은 '않다'의 어간)" },
+        { q: "오늘 <span>설거지</span> 당번.", a: "O", desc: "<strong>'설거지'</strong>가 표준어입니다. (설겆이 X)" },
+        { q: "점심은 <span>짜장면</span>이다.", a: "O", desc: "'자장면'과 '짜장면' 모두 표준어입니다." },
+        { q: "즐거운 <span>등굣길</span>.", a: "O", desc: "등교(한자)+길(우리말) 합성어이며 [등교낄]로 소리 나므로 <strong>사이시옷</strong>을 씁니다." },
+        { q: "만두 <span>곱배기</span> 주세요.", a: "X", desc: "뚜렷한 이유 없이 나는 된소리는 <strong>'곱빼기'</strong>로 적습니다." }, 
+        { q: "성격이 <span>문안</span>하다.", a: "X", desc: "별 탈 없다는 뜻은 <strong>'무난(無難)하다'</strong>입니다. 문안은 인사입니다." },
+        { q: "김치<span>찌게</span>가 맛있다.", a: "X", desc: "음식 이름 뒤에는 주로 '-개'가 붙습니다. <strong>'김치찌개'</strong>가 맞습니다." },
+        { q: "<span>오랫만</span>이야 친구.", a: "X", desc: "'오래간만'의 준말은 <strong>'오랜만'</strong>입니다." },
+        { q: "글씨를 <span>괴발개발</span> 썼다.", a: "O", desc: "고양이 발과 개 발이라는 뜻으로 표준어입니다. (개발새발도 표준어)" },
+        { q: "매콤한 <span>주꾸미</span>.", a: "O", desc: "발음은 [쭈꾸미]지만 표기는 <strong>'주꾸미'</strong>입니다." },
+        { q: "카드로 <span>결재</span>했다.", a: "X", desc: "돈을 내는 것은 <strong>'결제(決濟)'</strong>입니다. 결재는 상사의 승인입니다." },
+        { q: "김치를 <span>담궈</span> 먹다.", a: "X", desc: "'담그다'는 모음 조화에 따라 <strong>'담가'</strong>로 활용합니다. (담궈 X)" },
+        { q: "문을 꼭 <span>잠구고</span> 다녀라.", a: "X", desc: "'잠그다'는 <strong>'잠가', '잠그고'</strong>로 활용합니다. (잠구고 X)" },
+        { q: "시험을 <span>치뤄</span>야 한다.", a: "X", desc: "기본형 '치르다'의 활용은 <strong>'치러'</strong>입니다. (치뤄 X)" },
+        { q: "합격하기를 <span>바래</span>.", a: "X", desc: "'바라다'의 활용형은 <strong>'바라'</strong>입니다. '바래'는 색이 바래다는 뜻입니다." },
+        { q: "조개 <span>껍질</span>을 주웠다.", a: "X", desc: "조개처럼 딱딱한 것은 <strong>'껍데기'</strong>가 맞습니다. (껍질은 사과 껍질 등 무른 것)" },
+        { q: "내가 너를 <span>어떻게</span> 믿니.", a: "O", desc: "'어떠하다'의 부사형은 <strong>'어떻게'</strong>가 맞습니다. (서술어는 '어떡해')" },
+        { q: "기차 <span>찻간</span>에 앉았다.", a: "O", desc: "한자어끼리 결합해도 예외적(곳간, 셋방, 숫자, 찻간, 툇간, 횟수)으로 사이시옷을 씁니다." },
+        { q: "밥을 <span>숟가락</span>으로 먹다.", a: "O", desc: "'술'과 '가락'이 합쳐질 때 'ㄹ'이 'ㄷ'으로 변해 <strong>'숟가락'</strong>이 되었습니다." },
+        { q: "다 마신 <span>우유곽</span>.", a: "X", desc: "물건을 담는 작은 상자는 <strong>'갑(匣)'</strong>입니다. '우유갑'이 맞습니다." },
+        { q: "사흘은 <span>4일</span>이다.", a: "X", desc: "하루, 이틀, <strong>사흘은 3일</strong>입니다. 4일은 나흘입니다." },
+        { q: "<span>금일</span>은 금요일이다.", a: "X", desc: "금일(今日)은 <strong>'오늘'</strong>이라는 뜻의 한자어입니다." },
+        { q: "넘어져도 일어나는 <span>오뚜기</span>.", a: "X", desc: "부사 '오뚝'하다에서 온 말이므로 <strong>'오뚝이'</strong>가 맞습니다." },
+        { q: "문제를 <span>곰곰히</span> 생각했다.", a: "X", desc: "<strong>'곰곰이'</strong>가 표준어입니다." },
+        { q: "손을 <span>깨끗히</span> 씻자.", a: "X", desc: "'깨끗하다'의 어근 뒤지만 <strong>'깨끗이'</strong>로 적는 것이 원칙입니다." },
+        { q: "틈나는 대로 <span>틈틈히</span>.", a: "X", desc: "첩어(반복되는 말) 뒤에는 '이'가 붙습니다. <strong>'틈틈이'</strong>가 맞습니다." },
+        { q: "범인은 <span>단언컨대</span> 너다.", a: "O", desc: "'단언하건대'가 줄어들 때 ㅎ소리가 남아 <strong>'단언컨대'</strong>가 됩니다." }
+    ];
+
+    const quizList = document.getElementById('quiz-list');
+    let userAnswers = new Array(45).fill(null);
+    let shuffledQuestions = [];
+
+    // 배열 무작위 섞기 (Fisher-Yates Shuffle)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // 초기화
+    function init() {
+        shuffledQuestions = shuffleArray([...rawData]);
+
+        shuffledQuestions.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'quiz-item';
+            div.id = `q-${index}`;
+            div.innerHTML = `
+                <div class="question-header">
+                    <span class="q-badge">문제 ${index + 1}</span>
+                </div>
+                <div class="question-text">${item.q}</div>
+                <div class="btn-group" id="btn-group-${index}">
+                    <button class="ox-btn" onclick="selectAnswer(${index}, 'O')">⭕ 맞다</button>
+                    <button class="ox-btn" onclick="selectAnswer(${index}, 'X')">❌ 아니다</button>
+                </div>
+                <div class="explanation" id="expl-${index}"></div>
+            `;
+            quizList.appendChild(div);
+        });
+    }
+
+    function selectAnswer(index, val) {
+        userAnswers[index] = val;
+
+        const group = document.getElementById(`btn-group-${index}`);
+        const buttons = group.getElementsByTagName('button');
+        
+        buttons[0].className = 'ox-btn';
+        buttons[1].className = 'ox-btn';
+
+        if (val === 'O') buttons[0].classList.add('selected-o');
+        else buttons[1].classList.add('selected-x');
+
+        const count = userAnswers.filter(v => v !== null).length;
+        const percent = Math.round((count / 45) * 100);
+        document.getElementById('progress-bar').style.width = percent + "%";
+        document.getElementById('progress-text').innerText = `${count} / 45`;
+    }
+
+    function checkAll() {
+        const firstUnanswered = userAnswers.indexOf(null);
+        if (firstUnanswered !== -1) {
+            alert(`${firstUnanswered + 1}번 문제를 아직 안 풀었어요!`);
+            document.getElementById(`q-${firstUnanswered}`).scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+        }
+
+        let score = 0;
+        let reviewHtml = "";
+
+        shuffledQuestions.forEach((item, index) => {
+            const isCorrect = userAnswers[index] === item.a;
+            const explDiv = document.getElementById(`expl-${index}`);
+            
+            explDiv.style.display = 'block';
+
+            if (isCorrect) {
+                score++;
+                explDiv.innerHTML = `<span style="color:var(--correct-color); font-weight:bold;">✅ 정답입니다!</span><br>${item.desc}`;
+                explDiv.style.borderLeft = "5px solid var(--correct-color)";
+            } else {
+                explDiv.innerHTML = `<span style="color:var(--wrong-color); font-weight:bold;">❌ 땡! 틀렸습니다. (정답: ${item.a})</span><br>${item.desc}`;
+                explDiv.style.borderLeft = "5px solid var(--wrong-color)";
+            }
+
+            // 복습 노트 아이템 생성 (맞은 문제 + 틀린 문제 모두)
+            const statusClass = isCorrect ? "correct" : "wrong";
+            const statusText = isCorrect ? "<span class='correct-badge'>✅ 정답</span>" : "<span class='wrong-badge'>❌ 오답</span>";
+            
+            reviewHtml += `
+                <div class="review-item ${statusClass}" onclick="document.getElementById('q-${index}').scrollIntoView({behavior:'smooth', block:'center'})">
+                    <div class="review-header">
+                        <span>Q${index + 1}</span>
+                        ${statusText}
+                    </div>
+                    <div style="font-weight:bold; margin-bottom:5px;">${item.q.replace(/<[^>]*>/g, '')}</div>
+                    <div style="font-size:0.9rem; color:#636e72;">내 답: ${userAnswers[index]} / 정답: ${item.a}</div>
+                    <div style="font-size:0.9rem; color:#d63031; margin-top:5px; font-weight:bold;">💡 ${item.desc}</div>
+                </div>
+            `;
+        });
+
+        // 결과 화면 표시
+        const resultScreen = document.getElementById('result-screen');
+        resultScreen.style.display = 'block';
+
+        let rank = "";
+        if (score === 45) rank = "🏆 국어의 신 (존경합니다)";
+        else if (score >= 40) rank = "🥇 맞춤법 천재";
+        else if (score >= 30) rank = "🥈 훌륭해요";
+        else if (score >= 20) rank = "🥉 보통 실력";
+        else rank = "😅 분발하세요!";
+
+        resultScreen.innerHTML = `
+            <div class="score-box">
+                <h2>최종 점수</h2>
+                <div class="score-num">${score} / 45</div>
+                <div style="font-size:1.2rem;">${rank}</div>
+            </div>
+            
+            <div class="review-container">
+                <div class="review-title">📑 전체 문항 복습하기 (맞힌 문제 포함)</div>
+                ${reviewHtml}
+            </div>
+        `;
+
+        document.querySelector('.submit-area').style.display = 'none';
+        resultScreen.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // 실행
+    init();
+
+</script>
+</body>
+</html>
